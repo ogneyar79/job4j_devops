@@ -56,19 +56,18 @@ pipeline {
             }
         }
     }
-post {
-    always {
-        script {
-            def buildInfo = """\
-<b>Build number:</b> ${currentBuild.number}
-<b>Status:</b> ${currentBuild.currentResult}
-<b>Started at:</b> ${new Date(currentBuild.startTimeInMillis ?: System.currentTimeMillis())}
-<b>Duration:</b> ${currentBuild.durationString}
-
-<a href="${env.BUILD_URL}">Открыть билд в Jenkins</a>
-"""
-            telegramSend(chatId: '422946316', message: buildInfo, parseMode: 'HTML')
+ post {
+        always {
+            script {
+                echo "Отправка информации в Telegram"
+                def buildInfo = """\
+                    Build number: ${currentBuild.number}
+                    Build status: ${currentBuild.currentResult}
+                    Started at: ${new Date(currentBuild.startTimeInMillis ?: System.currentTimeMillis())}
+                    Duration so far: ${currentBuild.durationString}
+                """
+                telegramSend(chatId: '422946316', message: buildInfo)  // Отправка сообщения в Telegram
+            }
         }
     }
-}
 }
