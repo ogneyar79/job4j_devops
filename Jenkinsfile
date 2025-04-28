@@ -56,14 +56,15 @@ pipeline {
             }
         }
     }
+
  post {
      always {
          script {
-             sh """
-                 curl -s -X POST "https://api.telegram.org/bot8156463082:AAEdc3TNbRQQnEQDw42rCX2H1Fzltso0dm0/sendMessage" \
-                     -d chat_id="422946316" \
-                     -d text="Build ${env.BUILD_NUMBER} завершён со статусом: ${currentBuild.currentResult}"
-             """
+             def buildInfo = "Build number: ${currentBuild.number}\n" +
+                             "Build status: ${currentBuild.currentResult}\n" +
+                             "Started at: ${new Date(currentBuild.startTimeInMillis)}\n" +
+                             "Duration so far: ${currentBuild.durationString}"
+             telegramSend(message: buildInfo)
          }
      }
  }
