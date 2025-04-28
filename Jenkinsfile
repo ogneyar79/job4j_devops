@@ -65,7 +65,7 @@ pipeline {
     Started at: ${new Date(currentBuild.startTimeInMillis ?: System.currentTimeMillis())}
     Duration so far: ${currentBuild.durationString}
     """
-                    telegramSend(message: buildInfo)
+                   telegramSend(chatId: '422946316', message: buildInfo)
                 }
             }
         }
