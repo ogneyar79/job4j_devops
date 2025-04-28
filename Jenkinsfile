@@ -5,6 +5,11 @@ pipeline {
         git 'Default'
     }
 
+    environment {
+        BOT_TOKEN = credentials('8156463082:AAEdc3TNbRQQnEQDw42rCX2H1Fzltso0dm0')
+        CHAT_ID = '422946316'
+    }
+
     stages {
         stage('Prepare Environment') {
             steps {
@@ -56,17 +61,29 @@ pipeline {
             }
         }
     }
- post {
+    post {
         always {
             script {
-                echo "Отправка информации в Telegram"
-                def buildInfo = """\
-                    Build number: ${currentBuild.number}
-                    Build status: ${currentBuild.currentResult}
-                    Started at: ${new Date(currentBuild.startTimeInMillis ?: System.currentTimeMillis())}
-                    Duration so far: ${currentBuild.durationString}
+                def buildStatus = currentBuild.currentResult
+                def buildInfo = """
+                    📌 Сборка: ${env.JOB_NAME} #${env.BUILD_NUMBER}
+                    🚀 Статус: ${buildStatus}
+                    ⏱ Длительность: ${currentBuild.durationString.replace(' and counting', '')}
                 """
-                telegramSend(chatId: '422946316', message: buildInfo)  // Отправка сообщения в Telegram
+                try {
+                    telegramSend(
+                        chatId: env.CHAT_ID,
+                        message: buildInfo
+                    )
+                    echo "Сообщение отправлено через Telegram plugin"
+                } catch (Exception e) {
+                    echo "Не удалось отправить через плагин, пробуем curl: ${e.getMessage()}"
+                    sh """
+                        curl -s -X POST "https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage" \
+                            -d chat_id="${env.CHAT_ID}" \
+                            -d text="${buildInfo}"
+                    """
+                }
             }
         }
     }
