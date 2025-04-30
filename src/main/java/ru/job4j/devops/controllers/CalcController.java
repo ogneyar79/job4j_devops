@@ -13,12 +13,6 @@ import ru.job4j.devops.models.TwoArgs;
 @RequestMapping("calc")
 public class CalcController {
     /**
-     * Конструктор по умолчанию. Не содержит логики.
-     */
-    public CalcController() {
-    }
-
-    /**
      * Метод в котором происходит суммирование частей аргумента.
      * @param twoArgs сущность 2 аргумента
      * @return результат сложения

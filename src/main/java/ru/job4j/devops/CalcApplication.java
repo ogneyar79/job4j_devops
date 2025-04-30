@@ -8,13 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 public class CalcApplication {
-
-	/**
-	 * Конструктор по умолчанию. Не содержит логики.
-	 */
-	public CalcApplication() {
-	}
-
 	/**
 	 * Точка входа в приложение.
 	 * @param args аргументы командной строки
