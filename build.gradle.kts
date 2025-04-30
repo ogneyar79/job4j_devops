@@ -1,11 +1,12 @@
+import com.github.spotbugs.snom.SpotBugsTask
 
 plugins {
     checkstyle
     java
     jacoco
+    alias(libs.plugins.com.github.spotbugs)
     alias(libs.plugins.org.springframework.boot)
     alias(libs.plugins.io.spring.dependency.management)
-    alias(libs.plugins.com.github.spotbugs)
 }
 
 group = "ru.job4j.devops"
@@ -61,15 +62,14 @@ tasks.register<Zip>("zipJavaDoc") {
     destinationDirectory.set(layout.buildDirectory.dir("archives")) // Директория, куда будет сохранен архив
 }
 
-
-
-tasks.spotbugsMain {
+tasks.named<SpotBugsTask>("spotbugsMain") {
     reports.create("html") {
-        required = true
+        required.set(true)
         outputLocation.set(layout.buildDirectory.file("reports/spotbugs/spotbugs.html"))
     }
 }
 
 tasks.test {
-    finalizedBy(tasks.spotbugsMain)
+    finalizedBy(tasks.named("spotbugsMain"))
 }
+
