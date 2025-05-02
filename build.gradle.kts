@@ -87,6 +87,29 @@ tasks.register("checkJarSize") {
         }
     }
 }
+tasks.register<Zip>("archiveResources") {
+    group = "custom optimization"
+    description = "Archives the resources folder into a ZIP file"
+
+    val inputDir = file("src/main/resources")
+    val outputDir = layout.buildDirectory.dir("archives")
+
+    // Указываем Gradle, что зависит от содержимого папки
+    inputs.dir(inputDir)
+    outputs.file(outputDir.map { it.file("resources.zip") })
+
+    from(inputDir)
+    destinationDirectory.set(outputDir)
+    archiveFileName.set("resources.zip")
+
+    doLast {
+        println("Resources archived successfully at ${destinationDirectory.get().asFile.resolve(archiveFileName.get()).absolutePath}")
+    }
+}
+tasks.named("build") {
+    dependsOn("archiveResources")
+}
+
 
 tasks.test {
     finalizedBy("spotbugsMain") // Ленивый доступ к задаче, без необходимости явной конфигурации
