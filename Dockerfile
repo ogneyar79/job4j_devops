@@ -1,4 +1,4 @@
-FROM gradle:8.11.1-jdk21
+FROM gradle:8.11.1-jdk21 as builder
 
 ARG GRADLE_REMOTE_CACHE_URL
 ARG GRADLE_REMOTE_CACHE_PUSH
@@ -8,9 +8,25 @@ ARG GRADLE_REMOTE_CACHE_PASSWORD
 RUN mkdir job4j_devops
 WORKDIR /job4j_devops
 COPY . .
-
-# Используйте переменные в процессе сборки
 RUN gradle clean build -x test
+RUN jar xf /job4j_devops/build/libs/DevOps-1.0.0.jar
+RUN jdeps --ignore-missing-deps -q \
+    --recursive \
+    --multi-release 21 \
+    --print-module-deps \
+    --class-path 'BOOT-INF/lib/*' \
+    /job4j_devops/build/libs/DevOps-1.0.0.jar > deps.info
+RUN jlink \
+    --add-modules $(cat deps.info) \
+    --strip-debug \
+    --compress 2 \
+    --no-header-files \
+    --no-man-pages \
+    --output /slim-jre
 
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "build/libs/DevOps-1.0.0.jar"]
+FROM debian:bookworm-slim
+ENV JAVA_HOME /user/java/jdk21
+ENV PATH $JAVA_HOME/bin:$PATH
+COPY --from=builder /slim-jre $JAVA_HOME
+COPY --from=builder /job4j_devops/build/libs/DevOps-1.0.0.jar .
+ENTRYPOINT java -jar DevOps-1.0.0.jar
