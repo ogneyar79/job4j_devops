@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'agent1' }
+    agent { label 'agent21' }
 
     tools {
         git 'Default'
@@ -55,18 +55,22 @@ pipeline {
                 }
             }
         }
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t job4j_devops .'
+            }
+        }
     }
 
- post {
-     always {
-         script {
-             def buildInfo = "Build number: ${currentBuild.number}\n" +
-                             "Build status: ${currentBuild.currentResult}\n" +
-                             "Started at: ${new Date(currentBuild.startTimeInMillis)}\n" +
-                             "Duration so far: ${currentBuild.durationString}"
-             telegramSend(message: buildInfo)
-         }
-     }
- }
-
+    post {
+        always {
+            script {
+                def buildInfo = "Build number: ${currentBuild.number}\n" +
+                                 "Build status: ${currentBuild.currentResult}\n" +
+                                 "Started at: ${new Date(currentBuild.startTimeInMillis)}\n" +
+                                 "Duration so far: ${currentBuild.durationString}"
+                telegramSend(message: buildInfo)
+            }
+        }
+    }
 }
