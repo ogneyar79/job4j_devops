@@ -42,6 +42,9 @@ dependencies {
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
     implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.data)
+    implementation(libs.liquibase.core)
+    implementation(libs.postgresql)
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.assertj)
@@ -51,7 +54,6 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
-
 
 tasks.register<Zip>("zipJavaDoc") {
     group = "documentation" // Группа, в которой будет отображаться задача
